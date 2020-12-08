@@ -1,19 +1,19 @@
 /* Before refactoring (Original version) */
 class A
 {
-    public int f; /* printF , printF, */
+    int f; /* printF , printF, */
     public int g; /* printF, printG */
     public string h; /* printH */
 
     // Method 1
     void printF(int i)
     {
-        this.f = i * this.f;
+        this.setF(i * this.getF());
     }
 
     // Method 2
     void printF(float i){
-        this.f = (int) (i * this.f);
+        this.setF((int) (i * this.getF()));
         this.g = (int) (i * this.g);
     }
 
