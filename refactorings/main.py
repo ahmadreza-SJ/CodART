@@ -11,10 +11,18 @@ from refactorings.gen.Java9_v2Parser import Java9_v2Parser
 
 def main(args):
 
-    for file in listdir(args.dir):
+    files = get_file_dirs(args.dir)
+
+    create_new_project_dir('JavaProjectRefactored', files)
+
+
+    for file in files:
 
         # Step 1: Load input source into stream
-        stream = FileStream(args.dir + '/' + file, encoding='utf8')
+
+
+
+        stream = FileStream(file, encoding='utf8')
         # input_stream = StdinStream()
 
         # Step 2: Create an instance of AssignmentStLexer
@@ -28,12 +36,44 @@ def main(args):
         # Step 5: Create parse tree
         parse_tree = parser.compilationUnit()
         # Step 6: Create an instance of AssignmentStListener
-        my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='g')
+        my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='g',
+                                                         package_identifier="Dummy")
         walker = ParseTreeWalker()
         walker.walk(t=parse_tree, listener=my_listener)
 
-        with open('JavaProjectRefactored/' + file, mode='w', newline='') as f:
+        splited_dir = file.split('/')
+        splited_dir[0] = 'JavaProjectRefactored'
+        print(file)
+        print("/".join(splited_dir))
+        with open("/".join(splited_dir), mode='w', newline='') as f:
             f.write(my_listener.token_stream_rewriter.getDefaultText())
+
+
+def get_file_dirs(path):
+    dirs = []
+    for f in listdir(path):
+        cur_dir = path + "/" + f
+        if os.path.isdir(cur_dir):
+            dirs += get_file_dirs(cur_dir)
+        elif os.path.isfile(cur_dir):
+            dirs.append(cur_dir)
+
+    return dirs
+
+
+def create_new_project_dir(base_path, files):
+    if not os.path.exists(base_path):
+        os.mkdir(base_path)
+
+    for file in files:
+        curr_dir=base_path + '/'
+        dirs = file.split('/')
+        for i in range(1, len(dirs) - 1):
+            curr_dir += dirs[i] + '/'
+
+            if not os.path.exists(curr_dir):
+                os.mkdir(curr_dir)
+        # parent_dir = base_path
 
 
 if __name__ == '__main__':

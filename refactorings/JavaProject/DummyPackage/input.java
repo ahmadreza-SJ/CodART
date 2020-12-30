@@ -1,4 +1,7 @@
 /* Before refactoring (Original version) */
+
+package Dummy;
+
 class A
 {
     int f = 0; /* printF , printF, */

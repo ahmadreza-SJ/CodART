@@ -1,4 +1,4 @@
-/*After refactoring (Refactored version)*/
+/* Before refactoring (Original version) */
 class B
 {
     public A a;
