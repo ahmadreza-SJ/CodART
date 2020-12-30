@@ -1,4 +1,7 @@
 /* Before refactoring (Original version) */
+
+import Dummy;
+
 class B
 {
     public A a;

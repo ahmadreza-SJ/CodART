@@ -21,7 +21,9 @@ class MakeFieldStaticRefactoringListener(Java9_v2Listener):
         self.class_identifier = class_identifier
         self.package_identifier = package_identifier
 
+        self.is_package_imported = False
         self.in_selected_package = False
+        self.in_some_package = False
 
         # Move all the tokens in the source code in a buffer, token_stream_rewriter.
         if common_token_stream is not None:
@@ -30,27 +32,37 @@ class MakeFieldStaticRefactoringListener(Java9_v2Listener):
             raise TypeError('common_token_stream is None')
 
     def enterPackageName1(self, ctx:Java9_v2Parser.PackageName1Context):
+        self.in_some_package = True
         if self.package_identifier is not None:
             if self.package_identifier == ctx.identifier().getText():
-                print("package found")
+                self.in_selected_package = True
+
+    def enterSingleTypeImportDeclaration(self, ctx:Java9_v2Parser.SingleTypeImportDeclarationContext):
+        if self.package_identifier is not None:
+            if self.package_identifier == ctx.typeName().getText():
+                self.is_package_imported = True
 
 
-    # def exitFieldDeclaration(self, ctx: Java9_v2Parser.FieldDeclarationContext):
-    #     if ctx.variableDeclaratorList().getText().split('=')[0] == self.field_identifier:
-    #         if ctx.fieldModifier(0) == None:
-    #             self.token_stream_rewriter.insertBeforeIndex(
-    #                 index=ctx.start.tokenIndex,
-    #                 text='static ')
-    #         else:
-    #             if ctx.fieldModifier(1) == None:
-    #                 self.token_stream_rewriter.insertAfter(
-    #                     index=ctx.fieldModifier(0).stop.tokenIndex,
-    #                     text=' static')
-    #
-    #
-    #
-    #
-    #
+
+
+    def exitFieldDeclaration(self, ctx: Java9_v2Parser.FieldDeclarationContext):
+        if self.package_identifier is None and not self.in_some_package\
+                or self.package_identifier is not None and self.in_selected_package:
+            if ctx.variableDeclaratorList().getText().split('=')[0] == self.field_identifier:
+                if ctx.fieldModifier(0) == None:
+                    self.token_stream_rewriter.insertBeforeIndex(
+                        index=ctx.start.tokenIndex,
+                        text='static ')
+                else:
+                    if ctx.fieldModifier(1) == None:
+                        self.token_stream_rewriter.insertAfter(
+                            index=ctx.fieldModifier(0).stop.tokenIndex,
+                            text=' static')
+
+
+
+
+
     # def exitAssignment(self, ctx: Java9_v2Parser.AssignmentContext):
     #     if ctx.leftHandSide().getText() == self.field_identifier or \
     #             ctx.leftHandSide().getText() == 'this.' + self.field_identifier:

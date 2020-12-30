@@ -43,8 +43,6 @@ def main(args):
 
         splited_dir = file.split('/')
         splited_dir[0] = 'JavaProjectRefactored'
-        print(file)
-        print("/".join(splited_dir))
         with open("/".join(splited_dir), mode='w', newline='') as f:
             f.write(my_listener.token_stream_rewriter.getDefaultText())
 
