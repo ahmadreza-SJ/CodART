@@ -1,4 +1,4 @@
-/* Before refactoring (Original version) */
+/*After refactoring (Refactored version)*/
 class A
 {
     int f = 0; /* printF , printF, */

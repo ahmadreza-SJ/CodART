@@ -1,13 +1,15 @@
 /* Before refactoring (Original version) */
 
-import Dummy;
+
+import Dummy.*;
 
 class B
 {
     public A a;
+    int c;
 
     // Method 1
-    void printF()
+    void printF(int a)
     {
         print(a.g);
     }
@@ -16,5 +18,7 @@ class B
     void setF()
     {
         a.f = 5;
+        c = a.f;
+        printF(a.f);
     }
 }

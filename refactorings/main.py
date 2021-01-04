@@ -4,7 +4,7 @@ from os import listdir
 
 from antlr4 import *
 
-from refactorings.make_field_static_o import MakeFieldStaticRefactoringListener
+from refactorings.make_field_static import MakeFieldStaticRefactoringListener
 from refactorings.gen.Java9_v2Lexer import Java9_v2Lexer
 from refactorings.gen.Java9_v2Parser import Java9_v2Parser
 
@@ -36,8 +36,8 @@ def main(args):
         # Step 5: Create parse tree
         parse_tree = parser.compilationUnit()
         # Step 6: Create an instance of AssignmentStListener
-        my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='g',
-                                                         package_identifier="Dummy")
+        my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
+                                                         class_identifier='A', package_identifier="Dummy")
         walker = ParseTreeWalker()
         walker.walk(t=parse_tree, listener=my_listener)
 

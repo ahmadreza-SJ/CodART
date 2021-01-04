@@ -1,10 +1,9 @@
-/* Before refactoring (Original version) */
-
+/*After refactoring (Refactored version)*/
 package Dummy;
 
 class A
 {
-    int f = 0; /* printF , printF, */
+    static int f = 0; /* printF , printF, */
     public int g; /* printF, printG */
     public string h; /* printH */
 

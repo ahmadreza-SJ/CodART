@@ -20,6 +20,7 @@ class MakeFieldStaticRefactoringListener(Java9_v2Listener):
         self.field_identifier = field_identifier
         self.class_identifier = class_identifier
         self.package_identifier = package_identifier
+        self.declared_objects_names = []
 
         self.is_package_imported = False
         self.in_selected_package = False
@@ -36,60 +37,59 @@ class MakeFieldStaticRefactoringListener(Java9_v2Listener):
         if self.package_identifier is not None:
             if self.package_identifier == ctx.identifier().getText():
                 self.in_selected_package = True
+                print("Package Found")
 
     def enterSingleTypeImportDeclaration(self, ctx:Java9_v2Parser.SingleTypeImportDeclarationContext):
         if self.package_identifier is not None:
             if self.package_identifier == ctx.typeName().getText():
                 self.is_package_imported = True
 
-
+    def enterTypeImportOnDemandDeclaration(self, ctx:Java9_v2Parser.TypeImportOnDemandDeclarationContext):
+        if ctx.getText() == "import" + self.package_identifier + ".*;"\
+               or ctx.getText() == "import" + self.package_identifier + "." + self.class_identifier + ";":
+            self.is_package_imported = True
 
 
     def exitFieldDeclaration(self, ctx: Java9_v2Parser.FieldDeclarationContext):
         if self.package_identifier is None and not self.in_some_package\
                 or self.package_identifier is not None and self.in_selected_package:
             if ctx.variableDeclaratorList().getText().split('=')[0] == self.field_identifier:
-                if ctx.fieldModifier(0) == None:
+                print("Class Found")
+                print(len(ctx.fieldModifier()))
+                if ctx.fieldModifier(0) is None:
                     self.token_stream_rewriter.insertBeforeIndex(
                         index=ctx.start.tokenIndex,
                         text='static ')
                 else:
-                    if ctx.fieldModifier(1) == None:
+                    is_static = False
+                    for modifier in ctx.fieldModifier():
+                        if modifier.getText() == "static":
+                            is_static = True
+                            break
+                    if not is_static:
                         self.token_stream_rewriter.insertAfter(
-                            index=ctx.fieldModifier(0).stop.tokenIndex,
+                            index=ctx.fieldModifier(len(ctx.fieldModifier())-1).stop.tokenIndex,
                             text=' static')
 
+        if self.package_identifier is None or self.package_identifier is not None and self.is_package_imported:
+            if ctx.unannType().getText() == self.class_identifier:
+                self.declared_objects_names.append(ctx.variableDeclaratorList().getText().split('=')[0])
+                print("Object " + ctx.variableDeclaratorList().getText().split('=')[0] + " of type " + self.class_identifier + " found.")
+
+
+    def enterExpressionName2(self, ctx:Java9_v2Parser.ExpressionName1Context):
+        if self.is_package_imported or self.package_identifier is None or self.in_selected_package:
+            for object_name in self.declared_objects_names:
+                if ctx.getText() == object_name + "." + self.field_identifier:
+                    self.token_stream_rewriter.replaceIndex(
+                        index=ctx.start.tokenIndex,
+                        text=self.class_identifier)
 
 
 
-
-    # def exitAssignment(self, ctx: Java9_v2Parser.AssignmentContext):
-    #     if ctx.leftHandSide().getText() == self.field_identifier or \
-    #             ctx.leftHandSide().getText() == 'this.' + self.field_identifier:
-    #         expr_code = self.token_stream_rewriter.getText(program_name=self.token_stream_rewriter.DEFAULT_PROGRAM_NAME,
-    #                                                        start=ctx.expression().start.tokenIndex,
-    #                                                        stop=ctx.expression().stop.tokenIndex)
-    #         # new_code = 'this.set' + str.capitalize(self.field_identifier) + '(' + ctx.expression().getText() + ')'
-    #         new_code = 'this.set' + str.capitalize(self.field_identifier) + '(' + expr_code + ')'
-    #         self.token_stream_rewriter.replaceRange(ctx.start.tokenIndex, ctx.stop.tokenIndex, new_code)
-    #
-    # def exitPrimary(self, ctx: Java9_v2Parser.PrimaryContext):
-    #
-    #     if ctx.getChildCount() == 2:
-    #         if ctx.getText() == 'this.' + self.field_identifier or ctx.getText() == self.field_identifier:
-    #             new_code = 'this.get' + str.capitalize(self.field_identifier) + '()'
-    #             self.token_stream_rewriter.replaceRange(ctx.start.tokenIndex, ctx.stop.tokenIndex, new_code)
-    #
-    # def exitExpressionName2(self, ctx:Java9_v2Parser.ExpressionName2Context):
-    #     if ctx.getChildCount() == 3:
-    #         if ctx.children[2].getText() == self.field_identifier
-    #             new_code = 'this.get' + str.capitalize(self.field_identifier) + '()'
-    #             self.token_stream_rewriter.replaceRange(ctx.start.tokenIndex, ctx.stop.tokenIndex, new_code)
-    #
-    #
-    # def enterCompilationUnit1(self, ctx: Java9_v2Parser.CompilationUnit1Context):
-    #     hidden = self.token_stream.getHiddenTokensToLeft(ctx.start.tokenIndex)
-    #     self.token_stream_rewriter.replaceRange(from_idx=hidden[0].tokenIndex,
-    #                                             to_idx=hidden[-1].tokenIndex,
-    #                                             text='/*After refactoring (Refactored version)*/\n')
+    def enterCompilationUnit1(self, ctx: Java9_v2Parser.CompilationUnit1Context):
+        hidden = self.token_stream.getHiddenTokensToLeft(ctx.start.tokenIndex)
+        self.token_stream_rewriter.replaceRange(from_idx=hidden[0].tokenIndex,
+                                                to_idx=hidden[-1].tokenIndex,
+                                                text='/*After refactoring (Refactored version)*/\n')
 
