@@ -4,7 +4,7 @@ from os import listdir
 
 from antlr4 import *
 
-from refactorings.make_field_static import MakeFieldStaticRefactoringListener
+from refactorings.make_field_static_1 import MakeFieldStaticRefactoringListener
 from refactorings.gen.Java9_v2Lexer import Java9_v2Lexer
 from refactorings.gen.Java9_v2Parser import Java9_v2Parser
 

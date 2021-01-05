@@ -24,6 +24,7 @@ class MakeFieldStaticRefactoringListener(Java9_v2Listener):
 
         self.is_package_imported = False
         self.in_selected_package = False
+        self.in_selected_class = False
         self.in_some_package = False
 
         # Move all the tokens in the source code in a buffer, token_stream_rewriter.
@@ -39,6 +40,13 @@ class MakeFieldStaticRefactoringListener(Java9_v2Listener):
                 self.in_selected_package = True
                 print("Package Found")
 
+    def enterNormalClassDeclaration(self, ctx:Java9_v2Parser.NormalClassDeclarationContext):
+        if self.package_identifier is None and not self.in_some_package or\
+            self.package_identifier is not None and self.in_selected_package:
+            if ctx.identifier().getText() == self.class_identifier:
+                print("Class Found")
+                self.in_selected_class = True
+
     def enterSingleTypeImportDeclaration(self, ctx:Java9_v2Parser.SingleTypeImportDeclarationContext):
         if self.package_identifier is not None:
             if self.package_identifier == ctx.typeName().getText():
@@ -53,23 +61,24 @@ class MakeFieldStaticRefactoringListener(Java9_v2Listener):
     def exitFieldDeclaration(self, ctx: Java9_v2Parser.FieldDeclarationContext):
         if self.package_identifier is None and not self.in_some_package\
                 or self.package_identifier is not None and self.in_selected_package:
-            if ctx.variableDeclaratorList().getText().split('=')[0] == self.field_identifier:
-                print("Class Found")
-                print(len(ctx.fieldModifier()))
-                if ctx.fieldModifier(0) is None:
-                    self.token_stream_rewriter.insertBeforeIndex(
-                        index=ctx.start.tokenIndex,
-                        text='static ')
-                else:
-                    is_static = False
-                    for modifier in ctx.fieldModifier():
-                        if modifier.getText() == "static":
-                            is_static = True
-                            break
-                    if not is_static:
-                        self.token_stream_rewriter.insertAfter(
-                            index=ctx.fieldModifier(len(ctx.fieldModifier())-1).stop.tokenIndex,
-                            text=' static')
+            if self.in_selected_class:
+                if ctx.variableDeclaratorList().getText().split('=')[0] == self.field_identifier:
+
+                    print(len(ctx.fieldModifier()))
+                    if ctx.fieldModifier(0) is None:
+                        self.token_stream_rewriter.insertBeforeIndex(
+                            index=ctx.start.tokenIndex,
+                            text='static ')
+                    else:
+                        is_static = False
+                        for modifier in ctx.fieldModifier():
+                            if modifier.getText() == "static":
+                                is_static = True
+                                break
+                        if not is_static:
+                            self.token_stream_rewriter.insertAfter(
+                                index=ctx.fieldModifier(len(ctx.fieldModifier())-1).stop.tokenIndex,
+                                text=' static')
 
         if self.package_identifier is None or self.package_identifier is not None and self.is_package_imported:
             if ctx.unannType().getText() == self.class_identifier:
@@ -92,4 +101,6 @@ class MakeFieldStaticRefactoringListener(Java9_v2Listener):
         self.token_stream_rewriter.replaceRange(from_idx=hidden[0].tokenIndex,
                                                 to_idx=hidden[-1].tokenIndex,
                                                 text='/*After refactoring (Refactored version)*/\n')
+
+
 
