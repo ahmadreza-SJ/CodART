@@ -3,20 +3,21 @@ import Dummy.*;
 
 class B
 {
-    public A a;
+    public Z a = new Z();
     int c;
 
     // Method 1
     void printF(int a)
     {
-        print(a.g);
+        print(Z.g);
+        print(Z.x());
     }
 
     // Method 2
     void setF()
     {
-        A.f = 5;
-        c = A.f;
-        printF(A.f);
+        a.f = 5;
+        c = a.f;
+        printF(a.f);
     }
 }

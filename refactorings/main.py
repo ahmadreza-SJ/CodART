@@ -7,6 +7,7 @@ from antlr4 import *
 from refactorings.make_field_static_1 import MakeFieldStaticRefactoringListener
 from refactorings.gen.Java9_v2Lexer import Java9_v2Lexer
 from refactorings.gen.Java9_v2Parser import Java9_v2Parser
+from refactorings.rename_class import RenameClassRefactoringListener
 
 
 def main(args):
@@ -14,6 +15,7 @@ def main(args):
     files = get_file_dirs(args.dir)
 
     create_new_project_dir('JavaProjectRefactored', files)
+    ref = input(" choose your refactoring :")
 
 
     for file in files:
@@ -36,8 +38,23 @@ def main(args):
         # Step 5: Create parse tree
         parse_tree = parser.compilationUnit()
         # Step 6: Create an instance of AssignmentStListener
-        my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
+
+        #my_listener = RenameClassRefactoringListener(common_token_stream=token_stream, class_new_name='Z',
+        #                                                 class_identifier='A', package_identifier="Dummy")
+        if ref == "1":
+            print("Rename class  =>")
+            my_listener = RenameClassRefactoringListener(common_token_stream=token_stream, class_new_name='Z',
+                                                             class_identifier='A', package_identifier="Dummy")
+        elif ref == "2":
+            print("Make field static  =>")
+            my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
                                                          class_identifier='A', package_identifier="Dummy")
+        else:
+            print("Make field static  =>")
+            my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
+                                                             class_identifier='A', package_identifier="Dummy")
+
+
         walker = ParseTreeWalker()
         walker.walk(t=parse_tree, listener=my_listener)
 
