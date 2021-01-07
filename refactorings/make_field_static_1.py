@@ -41,6 +41,7 @@ class MakeFieldStaticRefactoringListener(Java9_v2Listener):
                 print("Package Found")
 
     def enterNormalClassDeclaration(self, ctx:Java9_v2Parser.NormalClassDeclarationContext):
+
         if self.package_identifier is None and not self.in_some_package or\
             self.package_identifier is not None and self.in_selected_package:
             if ctx.identifier().getText() == self.class_identifier:
