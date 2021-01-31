@@ -1,4 +1,5 @@
-/*After refactoring (Refactored version)*/
+/* Before refactoring (Original version) */
+
 package Dummy;
 
 class A

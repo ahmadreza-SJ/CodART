@@ -4,6 +4,7 @@ from os import listdir
 
 from antlr4 import *
 
+from refactorings.make_field_non_static import MakeFieldNonStaticRefactoringListener
 from refactorings.make_field_static_1 import MakeFieldStaticRefactoringListener
 from refactorings.gen.Java9_v2Lexer import Java9_v2Lexer
 from refactorings.gen.Java9_v2Parser import Java9_v2Parser
@@ -41,22 +42,27 @@ def main(args):
 
         #my_listener = RenameClassRefactoringListener(common_token_stream=token_stream, class_new_name='Z',
         #                                                 class_identifier='A', package_identifier="Dummy")
-        if ref == "1":
+        if ref == "Rename":
             print("Rename class  =>")
             my_listener = RenameClassRefactoringListener(common_token_stream=token_stream, class_new_name='Z',
                                                              class_identifier='A', package_identifier="Dummy")
-        elif ref == "2":
+        elif ref == "Static":
             print("Make field static  =>")
             my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
                                                          class_identifier='A', package_identifier="Dummy")
-        else:
-            print("Make field static  =>")
-            my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
+        elif ref == "Non Static":
+            print("Make field Non static  =>")
+            my_listener = MakeFieldNonStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
                                                              class_identifier='A', package_identifier="Dummy")
+
 
 
         walker = ParseTreeWalker()
         walker.walk(t=parse_tree, listener=my_listener)
+
+        if ref == "Non Static" and my_listener.canceled:
+            rewrite_project(files, 'JavaProjectRefactored')
+            break
 
         splited_dir = file.split('/')
         splited_dir[0] = 'JavaProjectRefactored'
@@ -74,6 +80,14 @@ def get_file_dirs(path):
             dirs.append(cur_dir)
 
     return dirs
+
+def rewrite_project(source_files, dest_path):
+    for file in source_files:
+        with open(file, mode='r', newline='') as rf:
+            splited_dir = file.split('/')
+            splited_dir[0] = dest_path
+            with open("/".join(splited_dir), mode='w', newline='') as f:
+                f.write(rf.read())
 
 
 def create_new_project_dir(base_path, files):

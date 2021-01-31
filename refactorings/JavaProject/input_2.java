@@ -5,21 +5,21 @@ import Dummy.*;
 
 class B
 {
-    public A a = new A();
+    //public A a;
     int c;
 
     // Method 1
     void printF(int a)
     {
-        print(A.g);
-        print(A.x());
+        print(a.g);
+        print(a.x());
     }
 
     // Method 2
     void setF()
     {
-        a.f = 5;
-        c = a.f;
-        printF(a.f);
+        A.f = 5;
+        c = A.f;
+        printF(A.f);
     }
 }

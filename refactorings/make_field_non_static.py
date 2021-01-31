@@ -27,6 +27,7 @@ class MakeFieldNonStaticRefactoringListener(Java9_v2Listener):
         self.in_selected_class = False
         self.in_some_package = False
         self.class_start_index = 0
+        self.canceled = False
 
         self.placeholder_field_identifier = "placeholder"
 
@@ -85,11 +86,9 @@ class MakeFieldNonStaticRefactoringListener(Java9_v2Listener):
     def enterExpressionName2(self, ctx:Java9_v2Parser.ExpressionName1Context):
         if self.is_package_imported or self.package_identifier is None or self.in_selected_package:
             if len(self.declared_objects_names) == 0:
-                self.declared_objects_names.append(self.placeholder_field_identifier)
-                self.token_stream_rewriter.insertAfter(
-                    index=self.class_start_index,
-                    text="private " + self.class_identifier + " " + self.placeholder_field_identifier)
-            if ctx.getText() == self.class_identifier + "." + self.field_identifier:
+                print("No object found...canceling ")
+                self.canceled = True
+            elif ctx.getText() == self.class_identifier + "." + self.field_identifier:
                 self.token_stream_rewriter.replaceIndex(
                     index=ctx.start.tokenIndex,
                     text=self.declared_objects_names[0])
