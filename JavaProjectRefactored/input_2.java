@@ -1,25 +1,25 @@
 /* Before refactoring (Original version) */
 
 
-import Dummy.*;
+import Dummy.Z;
 
 class B
 {
-    //public A a;
+    public Z a = new Z();
     int c;
 
     // Method 1
     void printF(int a)
     {
-        print(a.g);
+        print(Z.g);
         print(a.x());
     }
 
     // Method 2
     void setF()
     {
-        A.f = 5;
-        c = A.f;
-        printF(A.f);
+        Z.f = 5;
+        c = Z.f;
+        printF(Z.f);
     }
 }

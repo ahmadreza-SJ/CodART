@@ -2,7 +2,7 @@
 
 package Dummy;
 
-class A
+class Z A
 {
     static int f = 0; /* printF , printF, */
     public int g; /* printF, printG */

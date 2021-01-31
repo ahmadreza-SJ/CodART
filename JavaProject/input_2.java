@@ -1,17 +1,17 @@
 /* Before refactoring (Original version) */
 
 
-import Dummy.*;
+import Dummy.A;
 
 class B
 {
-    //public A a;
+    public A a = new A();
     int c;
 
     // Method 1
     void printF(int a)
     {
-        print(a.g);
+        print(A.g);
         print(a.x());
     }
 
