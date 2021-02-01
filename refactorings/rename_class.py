@@ -57,7 +57,11 @@ class RenameClassRefactoringListener(JavaParserLabeledListener):
     def enterImportDeclaration(self, ctx:JavaParserLabeled.ImportDeclarationContext):
         if self.package_identifier is not None:
             if self.package_identifier == ctx.qualifiedName().IDENTIFIER(0).getText():
-                self.is_package_imported = True
+                if len(ctx.qualifiedName().IDENTIFIER()) < 2 \
+                        or ctx.qualifiedName().IDENTIFIER(1) == self.class_identifier \
+                        or ctx.MUL() is not None:
+                    self.is_package_imported = True
+
                 if len(ctx.qualifiedName().IDENTIFIER()) >= 2:
                     if ctx.qualifiedName().IDENTIFIER(len(ctx.qualifiedName().IDENTIFIER()) - 1).getText() == self.class_identifier:
                         self.token_stream_rewriter.replaceIndex(

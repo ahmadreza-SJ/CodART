@@ -17,47 +17,11 @@ from os import listdir
 
 from antlr4 import *
 
-# <<<<<<< HEAD:main.py
-
-# from java9speedy.parser import sa_java9_v2
-#
-#
-# def main(args):
-#     # Step 1: Load input source into stream
-#     stream = FileStream(args.file, encoding='utf8')
-#     # input_stream = StdinStream()
-#
-#     # Step 2: Create an instance of AssignmentStLexer
-#     lexer = Java9_v2Lexer(stream)
-#     # Step 3: Convert the input source into a list of tokens
-#     token_stream = CommonTokenStream(lexer)
-#     # Step 4: Create an instance of the AssignmentStParser
-#     parser = Java9_v2Parser(token_stream)
-#     parser.getTokenStream()
-#
-#     # Step 5: Create parse tree
-#     # 1. Python backend --> Low speed
-#     # parse_tree = parser.compilationUnit()
-#
-#     # 2. C++ backend --> high speed
-#
-#     parse_tree = sa_java9_v2.parse(stream, 'compilationUnit', None)
-#     quit()
-#     # Step 6: Create an instance of AssignmentStListener
-#     my_listener = ExtractClassRefactoringListener(common_token_stream=token_stream, class_identifier='Worker')
-#
-#     # return
-#     walker = ParseTreeWalker()
-#     walker.walk(t=parse_tree, listener=my_listener)
-#
-#     with open('input.refactored.java', mode='w', newline='') as f:
-#         f.write(my_listener.token_stream_rewriter.getDefaultText())
-# =======
 
 from CodART.gen.javaLabeled.JavaLexer import JavaLexer
 from CodART.gen.javaLabeled.JavaParserLabeled import JavaParserLabeled
-# from refactorings.make_field_non_static import MakeFieldNonStaticRefactoringListener
-# from refactorings.make_field_static_1 import MakeFieldStaticRefactoringListener
+from refactorings.make_field_non_static import MakeFieldNonStaticRefactoringListener
+from refactorings.make_field_static_1 import MakeFieldStaticRefactoringListener
 from refactorings.rename_class import RenameClassRefactoringListener
 
 
@@ -96,15 +60,17 @@ def main(args):
             print("Rename class  =>")
             my_listener = RenameClassRefactoringListener(common_token_stream=token_stream, class_new_name='Z',
                                                              class_identifier='A', package_identifier="Dummy")
-        # elif ref == "Static":
-        #     print("Make field static  =>")
-        #     my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
-        #                                                  class_identifier='A', package_identifier="Dummy")
-        # elif ref == "Non Static":
-        #     print("Make field Non static  =>")
-        #     my_listener = MakeFieldNonStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
-        #                                                      class_identifier='A', package_identifier="Dummy")
-
+        elif ref == "Static":
+            print("Make field static  =>")
+            my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='g',
+                                                         class_identifier='A', package_identifier="Dummy")
+        elif ref == "Non Static":
+            print("Make field Non static  =>")
+            my_listener = MakeFieldNonStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
+                                                             class_identifier='A', package_identifier="Dummy")
+        else:
+            print("Not Valid")
+            break
 
 
         walker = ParseTreeWalker()

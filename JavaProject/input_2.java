@@ -5,13 +5,13 @@ import Dummy.A;
 
 class B
 {
-    public A a = new A();
+    public A a = 2;
     int c;
 
     // Method 1
     void printF(int a)
     {
-        print(A.g);
+        print(a.g);
         print(a.x());
     }
 
