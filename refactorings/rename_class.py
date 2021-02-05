@@ -1,8 +1,8 @@
 from antlr4 import *
 from antlr4.TokenStreamRewriter import TokenStreamRewriter
 
-from CodART.gen.javaLabeled.JavaParserLabeledListener import JavaParserLabeledListener
-from CodART.gen.javaLabeled.JavaParserLabeled import JavaParserLabeled
+from gen.javaLabeled.JavaParserLabeledListener import JavaParserLabeledListener
+from gen.javaLabeled.JavaParserLabeled import JavaParserLabeled
 
 class RenameClassRefactoringListener(JavaParserLabeledListener):
     """
@@ -51,8 +51,8 @@ class RenameClassRefactoringListener(JavaParserLabeledListener):
                 print("Class Found")
                 self.in_selected_class = True
                 self.token_stream_rewriter.replaceIndex(
-                    index=ctx.start.tokenIndex,
-                    text="class " + self.class_new_name)
+                    index=ctx.start.tokenIndex + 2,
+                    text=self.class_new_name)
 
     def enterImportDeclaration(self, ctx:JavaParserLabeled.ImportDeclarationContext):
         if self.package_identifier is not None:
@@ -61,18 +61,21 @@ class RenameClassRefactoringListener(JavaParserLabeledListener):
                         or ctx.qualifiedName().IDENTIFIER(1) == self.class_identifier \
                         or ctx.MUL() is not None:
                     self.is_package_imported = True
-
                 if len(ctx.qualifiedName().IDENTIFIER()) >= 2:
                     if ctx.qualifiedName().IDENTIFIER(len(ctx.qualifiedName().IDENTIFIER()) - 1).getText() == self.class_identifier:
+                        self.is_package_imported = True
                         self.token_stream_rewriter.replaceIndex(
                             index=ctx.qualifiedName().start.tokenIndex + 2,
                             text=self.class_new_name)
 
 
     def exitFieldDeclaration(self, ctx:JavaParserLabeled.FieldDeclarationContext):
+        print(self.package_identifier)
+        print(self.is_package_imported)
         if self.package_identifier is None \
                 or self.package_identifier is not None \
                 and self.is_package_imported:
+            print("b")
             if ctx.typeType().getText() == self.class_identifier:
                 # change the name class; (we find right class then change the name class)
                 self.token_stream_rewriter.replaceIndex(
@@ -109,7 +112,8 @@ class RenameClassRefactoringListener(JavaParserLabeledListener):
                     text=self.class_new_name)
 
 
-    #
+
+
     # def enterTypeName1(self, ctx:Java9_v2Parser.TypeName1Context):
     #     if self.is_package_imported \
     #             or self.package_identifier is None \
