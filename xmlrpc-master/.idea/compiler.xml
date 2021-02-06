@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="xmlrpc-common" />
+        <module name="xmlrpc-client" />
+        <module name="xmlrpc-server" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="xmlrpc" target="1.7" />
+      <module name="xmlrpc-client" target="1.7" />
+      <module name="xmlrpc-common" target="1.7" />
+      <module name="xmlrpc-server" target="1.7" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

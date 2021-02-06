@@ -59,11 +59,11 @@ def main(args):
         if ref == "Rename":
             print("Rename class  =>")
             my_listener = RenameClassRefactoringListener(common_token_stream=token_stream, class_new_name='Z',
-                                                             class_identifier='A', package_identifier="Dummy")
+                                                             class_identifier='ReflectiveXmlRpcMetaDataHandler', package_identifier="org.apache.xmlrpc.metadata")
         elif ref == "Static":
             print("Make field static  =>")
-            my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='g',
-                                                         class_identifier='A', package_identifier="Dummy")
+            my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='methodHelp',
+                                                         class_identifier='ReflectiveXmlRpcMetaDataHandler', package_identifier="org.apache.xmlrpc.metadata")
         elif ref == "Non Static":
             print("Make field Non static  =>")
             my_listener = MakeFieldNonStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
@@ -125,6 +125,6 @@ if __name__ == '__main__':
     argparser = argparse.ArgumentParser()
     argparser.add_argument(
         '-n', '--dir',
-        help='Input source', default=r'JavaProject')
+        help='Input source', default=r'server')
     args = argparser.parse_args()
     main(args)

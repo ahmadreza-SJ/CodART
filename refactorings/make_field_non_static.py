@@ -40,7 +40,7 @@ class MakeFieldNonStaticRefactoringListener(JavaParserLabeledListener):
     def enterPackageDeclaration(self, ctx: JavaParserLabeled.PackageDeclarationContext):
         self.in_some_package = True
         if self.package_identifier is not None:
-            if self.package_identifier == ctx.qualifiedName().IDENTIFIER(0).getText():
+            if self.package_identifier == ctx.qualifiedName().getText():
                 self.in_selected_package = True
                 print("Package Found")
 
@@ -54,13 +54,10 @@ class MakeFieldNonStaticRefactoringListener(JavaParserLabeledListener):
 
     def enterImportDeclaration(self, ctx: JavaParserLabeled.ImportDeclarationContext):
         if self.package_identifier is not None:
-            if self.package_identifier == ctx.qualifiedName().IDENTIFIER(0).getText():
-                if len(ctx.qualifiedName().IDENTIFIER()) < 2 \
-                        or len(ctx.qualifiedName().IDENTIFIER()) >= 2 \
-                        and ctx.qualifiedName().IDENTIFIER(len(ctx.qualifiedName().IDENTIFIER()) - 1).getText() \
-                        == self.class_identifier \
-                        or ctx.MUL() is not None:
-                    self.is_package_imported = True
+            if ctx.getText() == "import" + self.package_identifier + "." + self.class_identifier + ";" \
+                    or ctx.getText() == "import" + self.package_identifier + ".*" + ";" \
+                    or ctx.getText() == "import" + self.package_identifier + ";":
+                self.is_package_imported = True
 
     def exitFieldDeclaration(self, ctx: JavaParserLabeled.FieldDeclarationContext):
         if self.package_identifier is None and not self.in_some_package \

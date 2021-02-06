@@ -56,32 +56,32 @@ class RenameClassRefactoringListener(JavaParserLabeledListener):
 
     def enterImportDeclaration(self, ctx:JavaParserLabeled.ImportDeclarationContext):
         if self.package_identifier is not None:
-            if self.package_identifier == ctx.qualifiedName().IDENTIFIER(0).getText():
-                if len(ctx.qualifiedName().IDENTIFIER()) < 2 \
-                        or ctx.qualifiedName().IDENTIFIER(1) == self.class_identifier \
-                        or ctx.MUL() is not None:
-                    self.is_package_imported = True
-                if len(ctx.qualifiedName().IDENTIFIER()) >= 2:
-                    if ctx.qualifiedName().IDENTIFIER(len(ctx.qualifiedName().IDENTIFIER()) - 1).getText() == self.class_identifier:
-                        self.is_package_imported = True
-                        self.token_stream_rewriter.replaceIndex(
-                            index=ctx.qualifiedName().start.tokenIndex + 2,
-                            text=self.class_new_name)
+            if ctx.getText() == "import" + self.package_identifier + "." + self.class_identifier + ";"\
+                    or ctx.getText() == "import" + self.package_identifier + ".*" + ";"\
+                    or ctx.getText() == "import" +  self.package_identifier + ";":
+                self.is_package_imported = True
+            if ctx.getText() == "import" + self.package_identifier + "." + self.class_identifier + ";":
+                self.token_stream_rewriter.replaceIndex(
+                    index=ctx.qualifiedName().start.tokenIndex + 2*len(ctx.qualifiedName().IDENTIFIER()) - 2,
+                    text=self.class_new_name)
 
+    def enterConstructorDeclaration(self, ctx:JavaParserLabeled.ConstructorDeclarationContext):
+        if self.in_selected_package and ctx.IDENTIFIER().getText() == self.class_identifier:
+            self.token_stream_rewriter.replaceIndex(
+                index=ctx.start.tokenIndex,
+                text=self.class_new_name)
 
     def exitFieldDeclaration(self, ctx:JavaParserLabeled.FieldDeclarationContext):
-        print(self.package_identifier)
-        print(self.is_package_imported)
         if self.package_identifier is None \
                 or self.package_identifier is not None \
                 and self.is_package_imported:
-            print("b")
             if ctx.typeType().getText() == self.class_identifier:
                 # change the name class; (we find right class then change the name class)
                 self.token_stream_rewriter.replaceIndex(
                     index=ctx.typeType().start.tokenIndex,
                     text=self.class_new_name)
                 print("class name has change to new_class_name")
+
 
     # def enterExpressionName2(self, ctx:Java9_v2Parser.ExpressionName1Context):
     #     if self.is_package_imported \
