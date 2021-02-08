@@ -71,10 +71,10 @@ def main(args):
             print("Make field static  =>")
             my_listener = MakeFieldStaticRefactoringListener(common_token_stream=token_stream, field_identifier='methodHelp',
                                                          class_identifier='ReflectiveXmlRpcMetaDataHandler', package_identifier="org.apache.xmlrpc.metadata")
-        elif ref == "Non Static":
+        elif ref == "Non-Static":
             print("Make field Non static  =>")
-            my_listener = MakeFieldNonStaticRefactoringListener(common_token_stream=token_stream, field_identifier='f',
-                                                             class_identifier='A', package_identifier="Dummy")
+            my_listener = MakeFieldNonStaticRefactoringListener(common_token_stream=token_stream, field_identifier='log',
+                                                             class_identifier='XmlRpcErrorLogger', package_identifier="org.apache.xmlrpc.server")
         else:
             print("Not Valid")
             break

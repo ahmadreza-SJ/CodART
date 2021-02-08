@@ -72,7 +72,7 @@ class MakeFieldNonStaticRefactoringListener(JavaParserLabeledListener):
                         for i in range(len(grand_parent_ctx.modifier())):
                             if grand_parent_ctx.modifier(i).getText() == "static":
                                 self.token_stream_rewriter.replaceIndex(index=grand_parent_ctx.start.tokenIndex + i,
-                                                                        text="")
+                                                                        text=" ")
                                 break
 
         if self.package_identifier is None or self.package_identifier is not None and self.is_package_imported:

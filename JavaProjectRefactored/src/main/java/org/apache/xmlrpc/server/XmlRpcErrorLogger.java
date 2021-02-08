@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
  * error logging.
  */
 public class XmlRpcErrorLogger {
-    private static final Log log = LogFactory.getLog(XmlRpcErrorLogger.class);
+    private final Log log = LogFactory.getLog(XmlRpcErrorLogger.class);
 
     /**
      * Called to log the given error.

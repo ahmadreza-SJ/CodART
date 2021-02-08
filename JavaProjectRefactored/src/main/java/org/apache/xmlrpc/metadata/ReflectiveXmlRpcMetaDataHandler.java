@@ -29,7 +29,7 @@ import org.apache.xmlrpc.server.RequestProcessorFactoryFactory.RequestProcessorF
 
 /** Default implementation of {@link XmlRpcMetaDataHandler}.
  */
-public class Z extends ReflectiveXmlRpcHandler
+public class ReflectiveXmlRpcMetaDataHandler extends ReflectiveXmlRpcHandler
 		implements XmlRpcMetaDataHandler {
 	private final String[][] signatures;
 	private final String methodHelp;
@@ -47,7 +47,7 @@ public class Z extends ReflectiveXmlRpcHandler
 	 * @param pMethodHelp The help string, which will be returned
 	 * by {@link #getMethodHelp()}.
 	 */
-	public Z(AbstractReflectiveHandlerMapping pMapping,
+	public ReflectiveXmlRpcMetaDataHandler(AbstractReflectiveHandlerMapping pMapping,
                 TypeConverterFactory pTypeConverterFactory,
 			    Class pClass, RequestProcessorFactory pFactory, Method[] pMethods,
 			    String[][] pSignatures, String pMethodHelp) {
