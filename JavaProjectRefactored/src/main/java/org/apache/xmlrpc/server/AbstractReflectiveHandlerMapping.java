@@ -31,7 +31,7 @@ import org.apache.xmlrpc.XmlRpcHandler;
 import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.common.TypeConverterFactory;
 import org.apache.xmlrpc.common.TypeConverterFactoryImpl;
-import org.apache.xmlrpc.metadata.ReflectiveXmlRpcMetaDataHandler;
+import org.apache.xmlrpc.metadata.Z;
 import org.apache.xmlrpc.metadata.Util;
 import org.apache.xmlrpc.metadata.XmlRpcListableHandlerMapping;
 import org.apache.xmlrpc.metadata.XmlRpcMetaDataHandler;
@@ -185,7 +185,7 @@ public abstract class AbstractReflectiveHandlerMapping
     		return new ReflectiveXmlRpcHandler(this, typeConverterFactory,
                     pClass, factory, pMethods);
     	}
-    	return new ReflectiveXmlRpcMetaDataHandler(this, typeConverterFactory,
+    	return new Z(this, typeConverterFactory,
                 pClass, factory, pMethods, sig, help);
     }
 

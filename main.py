@@ -10,16 +10,18 @@ The main module of CodART
 __version__ = '0.2.0'
 __author__ = 'Morteza'
 
-
+import re
 import argparse
 import os.path
+import shutil
+
 from os import listdir
 
 from antlr4 import *
 
 
-from CodART.gen.javaLabeled.JavaLexer import JavaLexer
-from CodART.gen.javaLabeled.JavaParserLabeled import JavaParserLabeled
+from gen.javaLabeled.JavaLexer import JavaLexer
+from gen.javaLabeled.JavaParserLabeled import JavaParserLabeled
 from refactorings.make_field_non_static import MakeFieldNonStaticRefactoringListener
 from refactorings.make_field_static_1 import MakeFieldStaticRefactoringListener
 from refactorings.rename_class import RenameClassRefactoringListener
@@ -37,6 +39,11 @@ def main(args):
 
         # Step 1: Load input source into stream
 
+        m = re.search(r'^.*\.java$', file)
+        if m is None:
+            continue
+
+        print(file)
 
 
         stream = FileStream(file, encoding='utf8')
@@ -80,10 +87,19 @@ def main(args):
             rewrite_project(files, 'JavaProjectRefactored')
             break
 
-        splited_dir = file.split('/')
-        splited_dir[0] = 'JavaProjectRefactored'
-        with open("/".join(splited_dir), mode='w', newline='') as f:
-            f.write(my_listener.token_stream_rewriter.getDefaultText())
+        if ref == "Rename" and my_listener.in_selected_class:
+            splited_dir = file.split('/')
+            splited_dir[0] = 'JavaProjectRefactored'
+            if os.path.exists("/".join(splited_dir)):
+                os.remove("/".join(splited_dir))
+            splited_dir[-1] = my_listener.class_new_name + ".java"
+            with open("/".join(splited_dir), mode='w', newline='') as f:
+                f.write(my_listener.token_stream_rewriter.getDefaultText())
+        else:
+            splited_dir = file.split('/')
+            splited_dir[0] = 'JavaProjectRefactored'
+            with open("/".join(splited_dir), mode='w', newline='') as f:
+                f.write(my_listener.token_stream_rewriter.getDefaultText())
 
 
 def get_file_dirs(path):
@@ -98,6 +114,7 @@ def get_file_dirs(path):
     return dirs
 
 def rewrite_project(source_files, dest_path):
+
     for file in source_files:
         with open(file, mode='r', newline='') as rf:
             splited_dir = file.split('/')
@@ -107,8 +124,11 @@ def rewrite_project(source_files, dest_path):
 
 
 def create_new_project_dir(base_path, files):
-    if not os.path.exists(base_path):
-        os.mkdir(base_path)
+    if os.path.exists(base_path):
+        shutil.rmtree(base_path)
+
+
+    os.mkdir(base_path)
 
     for file in files:
         curr_dir=base_path + '/'

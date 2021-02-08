@@ -2,8 +2,8 @@ from antlr4 import *
 from antlr4.TokenStreamRewriter import TokenStreamRewriter
 
 
-from CodART.gen.javaLabeled.JavaParserLabeledListener import JavaParserLabeledListener
-from CodART.gen.javaLabeled.JavaParserLabeled import JavaParserLabeled
+from gen.javaLabeled.JavaParserLabeledListener import JavaParserLabeledListener
+from gen.javaLabeled.JavaParserLabeled import JavaParserLabeled
 
 
 class MakeFieldStaticRefactoringListener(JavaParserLabeledListener):
